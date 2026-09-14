@@ -8,7 +8,11 @@
   // (FROM --platform=linux/amd64), because the Debian 9 toolchain packages only
   // exist for that architecture. Doing it there rather than through build
   // options keeps it working in every tool that reads this file.
-  "name": "ELTE Compilers (gcc 6.3.0 / bisonc++ 5.02.00)",
+  // Keep this a bare lowercase slug. CLion builds the image as
+  // jb-devcontainer-<name>, so spaces, parentheses, "/" and "+" - anything not
+  // legal in a Docker reference - make the build fail with "invalid tag".
+  // The toolchain versions this pins are in the README instead.
+  "name": "elte-compilers",
 
   "build": {
     "dockerfile": "../docker/Dockerfile",
