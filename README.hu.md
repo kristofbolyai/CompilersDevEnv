@@ -1,6 +1,6 @@
 # ELTE Fordítóprogramok — Docker fejlesztői környezet
 
-*[English version](README.md)*
+*[English version](README.md) · [Gyors kezdés](quick_start.hu.md)*
 
 Minden, ami a **Fordítóprogramok** tárgyhoz kell — `bisonc++`, `flexc++` és
 pontosan az a `g++`, ami a kari szerveren fut — egyetlen konténerbe csomagolva,
@@ -39,6 +39,11 @@ Dockerre, és semmi másra.
 | **macOS** | [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/) — Apple Silicon gépen olvasd el az [Apple Silicon](#apple-silicon-és-más-arm-gépek) részt is |
 | **Windows** | [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) (a WSL 2 backendet kapcsold be, ha kérdezi) |
 | **Linux** | [Docker Engine](https://docs.docker.com/engine/install/), majd `sudo usermod -aG docker $USER`, és jelentkezz ki-be |
+
+Mindhárom rendszerhez másolható csomagkezelő-parancsok a
+[quick_start.hu.md](quick_start.hu.md) fájlban vannak. Ha a Docker Desktop
+helyett magad telepíted a Docker CLI-t, telepítsd mellé a `docker-buildx`
+csomagot is — az IDE-k a `docker buildx build` paranccsal építenek.
 
 A beállításaidat bármikor ellenőrizheted:
 

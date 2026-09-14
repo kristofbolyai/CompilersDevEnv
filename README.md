@@ -1,6 +1,6 @@
 # ELTE Compilers — Docker development environment
 
-*[Magyar változat](README.hu.md)*
+*[Magyar változat](README.hu.md) · [Quick start](quick_start.md)*
 
 Everything the **Fordítóprogramok** (Compilers) course needs — `bisonc++`,
 `flexc++` and the exact `g++` that runs on the faculty server — packed into a
@@ -39,6 +39,11 @@ Docker, and nothing else.
 | **macOS** | [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/) — on Apple Silicon also read [Apple Silicon](#apple-silicon-and-other-arm-machines) below |
 | **Windows** | [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) (enable the WSL 2 backend when asked) |
 | **Linux** | [Docker Engine](https://docs.docker.com/engine/install/), then `sudo usermod -aG docker $USER` and log out and back in |
+
+Copy-paste package manager commands for all three are in
+[quick_start.md](quick_start.md). If you install the Docker CLI yourself rather
+than Docker Desktop, install `docker-buildx` alongside it — IDEs build dev
+containers with `docker buildx build`.
 
 Check your setup at any time:
 

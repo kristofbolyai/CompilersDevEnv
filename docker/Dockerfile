@@ -1,4 +1,10 @@
 # syntax=docker/dockerfile:1
+# check=skip=FromPlatformFlagConstDisallowed
+#
+# The check above is skipped deliberately: BuildKit warns that a constant
+# platform in FROM is usually a mistake, but here it is the point. The Debian 9
+# packages this image is built from are published for x86 only, so the platform
+# must not follow the host's.
 #
 # ELTE "Fordítóprogramok" (Compilers) development environment.
 #
