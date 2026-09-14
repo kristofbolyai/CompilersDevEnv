@@ -1,0 +1,46 @@
+{
+  // Dev Container definition for the ELTE Compilers environment.
+  //
+  // Works with JetBrains CLion / IntelliJ-based IDEs and with VS Code.
+  // See README.md ("Using an IDE") for how to open it.
+  //
+  // Note that the image is pinned to linux/amd64 inside the Dockerfile itself
+  // (FROM --platform=linux/amd64), because the Debian 9 toolchain packages only
+  // exist for that architecture. Doing it there rather than through build
+  // options keeps it working in every tool that reads this file.
+  "name": "ELTE Compilers (gcc 6.3.0 / bisonc++ 5.02.00)",
+
+  "build": {
+    "dockerfile": "../docker/Dockerfile",
+    // The build context is the repository root: the Dockerfile copies
+    // docker/entrypoint.sh, which lives outside .devcontainer.
+    "context": ".."
+  },
+
+  // Mount the whole repository, but open the IDE on workspace/ - that is where
+  // your own code belongs. Keeping the mount point fixed (rather than letting
+  // it default to /workspaces/<folder name>) means paths are identical whether
+  // you came in through the IDE or through ./dev.sh.
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/elte-compilers,type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/elte-compilers/workspace",
+
+  "remoteUser": "student",
+
+  "customizations": {
+    "jetbrains": {
+      "backend": "CLion"
+    },
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "C_Cpp.default.cppStandard": "c++14",
+        "C_Cpp.default.compilerPath": "/usr/bin/g++-6"
+      }
+    }
+  },
+
+  "postCreateCommand": "g++ --version | head -1 && bisonc++ -v && flexc++ -v"
+}
