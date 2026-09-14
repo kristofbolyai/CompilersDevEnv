@@ -71,6 +71,7 @@ docker_run() {
         --platform "$platform"
         -v "$REPO_ROOT:$CONTAINER_REPO"
         -w "$(container_workdir)"
+        -e ELTE_EXPECT_MOUNT=1
     )
 
     # On Linux a bind mount keeps the host's numeric ownership, so the

@@ -236,6 +236,11 @@ one command stays slow everywhere. It is quick enough for the occasional check.
 **`the Docker daemon is not reachable`** — start Docker Desktop, or run
 `colima start`.
 
+**`the project folder is not visible inside the container`** — Docker can only
+bind-mount folders it is allowed to share. Keep the repository under your home
+directory, or add its location under Docker Desktop → Settings → Resources →
+File sharing.
+
 **`./dev.sh: Permission denied`** — `chmod +x dev.sh`.
 
 **PowerShell refuses to run `dev.ps1`** — allow local scripts once:

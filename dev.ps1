@@ -85,7 +85,8 @@ function Invoke-Container {
         '--rm',
         '--platform', $ImagePlatform,
         '-v', "${RepoRoot}:${ContainerRepo}",
-        '-w', (Get-ContainerWorkdir)
+        '-w', (Get-ContainerWorkdir),
+        '-e', 'ELTE_EXPECT_MOUNT=1'
     )
     # Docker Desktop on Windows maps ownership for us, so no HOST_UID here.
     if ([Environment]::UserInteractive) { $opts += '-it' }

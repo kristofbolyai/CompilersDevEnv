@@ -241,6 +241,11 @@ az egy parancs mindenhol lassú marad. Alkalmankénti ellenőrzésre bőven elé
 **`the Docker daemon is not reachable`** — indítsd el a Docker Desktopot, vagy
 futtasd a `colima start` parancsot.
 
+**`the project folder is not visible inside the container`** — a Docker csak
+azokat a mappákat tudja becsatolni, amelyek megosztására engedélyt kapott. Tartsd
+a repót a home könyvtáradon belül, vagy vedd fel a helyét a Docker Desktop →
+Settings → Resources → File sharing alatt.
+
 **`./dev.sh: Permission denied`** — `chmod +x dev.sh`.
 
 **A PowerShell nem hajlandó futtatni a `dev.ps1` fájlt** — engedélyezd egyszer
