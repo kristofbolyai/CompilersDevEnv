@@ -1,0 +1,55 @@
+# syntax=docker/dockerfile:1
+#
+# The faithful image: an untouched Debian 9 (stretch) userland, which is what
+# the faculty server `pandora` actually runs.
+#
+# Use this to confirm that what builds in the day-to-day dev image will also
+# build when you hand it in (`./dev.sh verify`). It deliberately has no IDE
+# support: Debian 9 ships glibc 2.24, and both the JetBrains and the VS Code
+# remote backends require 2.28 or newer, so nothing can attach to it. It is a
+# command-line oracle, nothing more.
+#
+# It is 32-bit on purpose: pandora reports `Target: i686-linux-gnu`, so this is
+# also the only place where type sizes and pointer widths match what your code
+# will see when it is marked.
+
+FROM --platform=linux/386 i386/debian:stretch-slim
+
+LABEL org.opencontainers.image.title="ELTE Compilers - pandora replica (Debian 9)"
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+
+# Debian 9 is end-of-life; its packages only live on archive.debian.org, and
+# the release files are long past their Valid-Until date.
+RUN set -eux; \
+    printf 'deb http://archive.debian.org/debian stretch main\n' > /etc/apt/sources.list; \
+    printf 'deb http://archive.debian.org/debian-security stretch/updates main\n' >> /etc/apt/sources.list; \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid; \
+    apt-get update -qq; \
+    apt-get install -y -qq --no-install-recommends \
+        g++ gcc make cmake gdb valgrind bisonc++ flexc++ \
+        git less nano gosu \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+ARG USERNAME=student
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN set -eux; \
+    groupadd --gid "$USER_GID" "$USERNAME"; \
+    useradd --uid "$USER_UID" --gid "$USER_GID" -m -s /bin/bash "$USERNAME"
+
+RUN set -eux; \
+    mkdir -p /workspaces/elte-compilers/workspace; \
+    ln -s /workspaces/elte-compilers/workspace /workspace; \
+    chown -R "$USER_UID:$USER_GID" /workspaces
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+RUN set -eux; uname -m; gcc -v 2>&1 | grep -E "^Target|^gcc version"; bisonc++ -v; flexc++ -v
+
+WORKDIR /workspaces/elte-compilers/workspace
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["bash"]
