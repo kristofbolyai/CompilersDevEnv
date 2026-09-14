@@ -1,0 +1,16 @@
+// Included by lex.cc - the place for anything the scanner's actions need.
+
+// $insert class_h
+#include "scanner.h"
+
+#include <string>
+
+// Token constants (ParserBase::NUMBER and friends) live here. bisonc++ must
+// therefore have run at least once before flexc++'s output can be compiled;
+// the Makefile encodes that ordering.
+#include "parserbase.h"
+
+inline void Scanner::setValue()
+{
+    d_value = std::stoi(matched());
+}

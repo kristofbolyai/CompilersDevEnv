@@ -1,0 +1,38 @@
+// Included by parse.cc - the place for anything the parser's actions need.
+
+// $insert class.h
+#include "parser.h"
+
+#include <iostream>
+
+inline void Parser::error(char const *msg)
+{
+    std::cerr << msg << '\n';
+}
+
+// $insert lex
+//
+// Every token the parser consumes passes through here, which makes this the
+// natural place to attach semantic values: d_val__ is the value bisonc++
+// pushes onto its value stack when the token is shifted, and nextToken() does
+// not touch it after lex() returns.
+inline int Parser::lex()
+{
+    int token = d_scanner.lex();
+
+    if (token == NUMBER)
+        d_val__ = d_scanner.value();
+
+    return token;
+}
+
+inline void Parser::print()
+{
+    print__();
+}
+
+inline void Parser::exceptionHandler__(std::exception const &exc)
+{
+    (void)exc;
+    throw;              // re-implement to handle exceptions thrown by actions
+}

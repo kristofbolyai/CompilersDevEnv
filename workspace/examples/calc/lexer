@@ -1,0 +1,21 @@
+// Scanner specification for flexc++.
+//
+// Regenerate with:  flexc++ lexer
+// flexc++ (re)writes scannerbase.h and lex.cc on every run, and creates
+// scanner.h / scanner.ih only if they do not exist yet - those two are yours
+// to edit and are kept under version control.
+
+%filenames  scanner
+%class-name Scanner
+
+%%
+
+[ \t\r]+       // whitespace is not a token, just skip it
+
+[0-9]+         { setValue(); return ParserBase::NUMBER; }
+
+\n             return '\n';
+
+[-+*/()]       return matched()[0];
+
+.              return matched()[0];   // let the parser report the error
