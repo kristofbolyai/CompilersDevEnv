@@ -37,11 +37,15 @@ ENV LANG=C.UTF-8
 # ---------------------------------------------------------------------------
 # 1. Modern userland: build tooling, debugger, and the shared libraries the
 #    JetBrains / VS Code remote backends require inside a dev container.
+#    The lib32/i386 packages are what make `g++ -m32` work: pandora is a 32-bit
+#    machine, so compiling with -m32 here reproduces its type sizes.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
+    dpkg --add-architecture i386; \
     apt-get update -qq; \
     apt-get install -y -qq --no-install-recommends \
         binutils libc6-dev libgmp10 libmpc3 zlib1g libcc1-0 \
+        libc6-dev-i386 libc6-i386 lib32stdc++6 lib32gcc-s1 linux-libc-dev:i386 \
         make cmake gdb valgrind \
         git curl ca-certificates unzip procps less nano vim-tiny sudo gosu \
         libx11-6 libxext6 libxrender1 libxtst6 libxi6 libfreetype6 \
@@ -67,8 +71,8 @@ RUN set -eux; \
 #    archive is frozen, so leaving them unpinned is still deterministic.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
-    echo 'deb [trusted=yes] http://archive.debian.org/debian stretch main'  >  /etc/apt/sources.list.d/legacy.list; \
-    echo 'deb [trusted=yes] http://archive.debian.org/debian bullseye main' >> /etc/apt/sources.list.d/legacy.list; \
+    echo 'deb [arch=amd64 trusted=yes] http://archive.debian.org/debian stretch main'  >  /etc/apt/sources.list.d/legacy.list; \
+    echo 'deb [arch=amd64 trusted=yes] http://archive.debian.org/debian bullseye main' >> /etc/apt/sources.list.d/legacy.list; \
     printf 'Package: *\nPin: release n=stretch\nPin-Priority: -10\n\nPackage: *\nPin: release n=bullseye\nPin-Priority: -10\n' \
         > /etc/apt/preferences.d/no-legacy; \
     echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid; \
@@ -77,6 +81,8 @@ RUN set -eux; \
     apt-get download -y \
         "gcc-6=${GCC6_VER}" "g++-6=${GCC6_VER}" "cpp-6=${GCC6_VER}" \
         "gcc-6-base=${GCC6_VER}" "libgcc-6-dev=${GCC6_VER}" "libstdc++-6-dev=${GCC6_VER}" \
+        "gcc-6-multilib=${GCC6_VER}" "g++-6-multilib=${GCC6_VER}" \
+        "lib32gcc-6-dev=${GCC6_VER}" "lib32stdc++-6-dev=${GCC6_VER}" \
         "libisl15=${ISL_VER}" "libmpfr4=${MPFR_VER}" \
         "libbobcat4=${BOBCAT_VER}" "libssl1.1=${SSL_VER}" \
         libreadline7/stretch libtinfo5/stretch libmilter1.0.1/stretch \
@@ -103,7 +109,14 @@ RUN set -eux; \
     gcc --version | head -1; \
     g++ --version | head -1; \
     bisonc++ -v; \
-    flexc++ -v
+    flexc++ -v; \
+    printf 'int main(){ return 0; }\n' > /tmp/m.cc; \
+    g++ -m32 -o /tmp/m32 /tmp/m.cc; /tmp/m32; \
+    g++      -o /tmp/m64 /tmp/m.cc; /tmp/m64; \
+    readelf -h /tmp/m32 | grep -q ELF32; \
+    readelf -h /tmp/m64 | grep -q ELF64; \
+    echo "-m32 builds and runs 32-bit binaries"; \
+    rm -f /tmp/m.cc /tmp/m32 /tmp/m64
 
 # ---------------------------------------------------------------------------
 # 4. Unprivileged user. Dev containers expect to run as a non-root user so that
