@@ -149,8 +149,8 @@ cmd_doctor() {
 
     echo "  host arch       : $(uname -m)"
     if [[ "$(uname -m)" == "arm64" || "$(uname -m)" == "aarch64" ]]; then
-        echo "                    (amd64 is emulated here - see 'Apple Silicon' in the README;"
-        echo "                     enabling Rosetta makes builds several times faster and steadier)"
+        echo "                    (amd64 runs emulated here; if builds feel slow, turn on"
+        echo "                     Rosetta - see 'Apple Silicon' in the README)"
     fi
     if docker run --rm --platform "$PLATFORM" debian:bookworm-slim true >/dev/null 2>&1; then
         echo "  linux/amd64     : runnable"

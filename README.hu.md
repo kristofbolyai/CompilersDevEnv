@@ -28,7 +28,7 @@ verzióival. Rögzítve vannak, így meg is maradnak egyformának:
 | `bisonc++` | V5.02.00 | ugyanaz |
 | `flexc++` | V2.05.00 | ugyanaz |
 | Debian | 9 (stretch) | 9-es eszközlánc Debian 12 alapon — lásd [Hogyan működik](#hogyan-működik) |
-| Architektúra | i686 (32 bites) | x86-64 a napi munkához, i686 a `./dev.sh verify`-hoz |
+| Architektúra | i686 (32 bites) | alapból x86-64, `-m32`-vel 32 bites, a `./dev.sh verify` i686 |
 
 ## Mire van szükséged
 
@@ -150,11 +150,6 @@ A CLion egyből a `workspace/` mappát nyitja meg, és a
 `workspace/examples/calc/` mappában van `CMakeLists.txt`, így a példát CMake
 projektként natívan kezeli.
 
-> **A JetBrains dev containerekhez Docker Desktop kell.** A JetBrains itt
-> egyelőre nem támogatja a Colimát és a Podmant. Ha Colimát használsz, a
-> `./dev.sh` tökéletesen működik — csak az IDE-n belüli dev container funkció
-> igényel Docker Desktopot.
-
 ### VS Code
 
 Telepítsd a **Dev Containers** bővítményt, majd a parancspalettából válaszd a
@@ -165,6 +160,24 @@ Telepítsd a **Dev Containers** bővítményt, majd a parancspalettából válas
 Nincs mit integrálni: a fájlokat a saját gépeden szerkeszted, és nyitva tartasz
 egy `./dev.sh` shellt egy terminálban a `make` futtatásához. Ez mindenhol
 működik, és a legtöbben úgyis ennél kötnek ki.
+
+## A pandora 32 bites fordításának megfelelően
+
+A pandora 32 bites gép, így ott a `sizeof(long)` és a `sizeof(void *)` 4, a
+fejlesztői image-ben viszont 8. A tárgy feladatai közül szinte semmi nem függ
+ettől, de ha a tiéd mégis, a `-m32` kapcsolóval a fejlesztői image is 32 bites
+kódot állít elő:
+
+```console
+$ g++ -m32 -std=c++14 -o calc main.cc parse.cc lex.cc
+$ make CXXFLAGS="-std=c++14 -Wall -m32"
+```
+
+A `-m32` a *célplatformot* változtatja meg, nem a fordítót: ugyanaz a g++ 6.3.0
+x86-64 helyett x86 kódot ad ki, így a pointerek és a `long` 4 bájtosak lesznek,
+a bináris pedig a pandora adatmodelljét követi. A `./dev.sh verify` ugyanezt
+fedi le azzal, hogy valódi 32 bites Debian 9-en fordít, tehát a `-m32` akkor
+hasznos, ha a fejlesztői image gyorsabb visszajelzését szeretnéd.
 
 ## Beadás előtt
 
@@ -226,7 +239,8 @@ többszörösen gyorsabb és érezhetően megbízhatóbb lesz:
 - **Docker Desktop** → Settings → General → *Use Rosetta for x86_64/amd64
   emulation on Apple Silicon*.
 - **Colima** → indítsd így: `colima start --vm-type vz --vz-rosetta`, és adj
-  neki helyet: `--cpu 4 --memory 8`.
+  neki helyet: `--cpu 8 --memory 16`. Ha ezt minden jövőbeli Colima-példány
+  alapértelmezésévé szeretnéd tenni, írd bele a `colima template` fájlba.
 
 Sima QEMU-emuláció alatt, kevés memóriával a `g++` néha elszáll
 `internal compiler error: Segmentation fault` hibával. Ez az emulátor hibája,
@@ -266,11 +280,17 @@ fájljaid figyelmeztetéseit érdemes elolvasni, ezt a kettőt nem.
 
 ## Ismert eltérések a pandorától
 
-A fejlesztői image 64 bites, a pandora 32 bites, így a `sizeof(long)` és a
-pointerek mérete eltér. Ez a tárgy feladataiban szinte soha nem számít, és ha
-mégis, a `./dev.sh verify` lefedi — az az image valóban `i686-linux-gnu`.
+A fejlesztői image alapértelmezésben 64 bites, a pandora 32 bites, így a
+`sizeof(long)` és a pointerek mérete eltér. Ha ez számít, fordíts `-m32`
+kapcsolóval, vagy futtasd a `./dev.sh verify` parancsot — lásd
+[A pandora 32 bites fordításának megfelelően](#a-pandora-32-bites-fordításának-megfelelően).
 
 A fejlesztői image C könyvtára is újabb a pandoráénál, így egy 2016 után
 bekerült glibc-függvény itt lefordulna, a pandorán viszont nem. Ezt is elkapja
 a `./dev.sh verify`. Beadás előtt egyszer lefuttatni — ennyi az egész
 védekezés.
+
+## Licenc
+
+MIT — lásd a [LICENSE](LICENSE) fájlt. Használd, forkold, add tovább az
+évfolyamtársaidnak.

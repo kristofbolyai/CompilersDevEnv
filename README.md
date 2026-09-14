@@ -28,7 +28,7 @@ matched:
 | `bisonc++` | V5.02.00 | identical |
 | `flexc++` | V2.05.00 | identical |
 | Debian | 9 (stretch) | 9 toolchain on a Debian 12 base — see [How it works](#how-it-works) |
-| Architecture | i686 (32-bit) | x86-64 for daily work, i686 for `./dev.sh verify` |
+| Architecture | i686 (32-bit) | x86-64 by default, 32-bit via `-m32`, i686 in `./dev.sh verify` |
 
 ## What you need
 
@@ -147,10 +147,6 @@ your code inside the container with full completion, navigation and debugging.
 CLion opens directly on `workspace/`, and `workspace/examples/calc/` has a
 `CMakeLists.txt` so the example is a CMake project it understands natively.
 
-> **JetBrains dev containers need Docker Desktop.** JetBrains does not support
-> Colima or Podman here yet. If you use Colima, `./dev.sh` still works perfectly
-> — it is only the in-IDE dev container feature that requires Docker Desktop.
-
 ### VS Code
 
 Install the **Dev Containers** extension, then *Reopen in Container* from the
@@ -161,6 +157,23 @@ command palette. The same `devcontainer.json` is used.
 There is nothing to integrate: edit files on your machine, and keep a
 `./dev.sh` shell open in a terminal to run `make`. This works everywhere and is
 what most people end up doing.
+
+## Matching pandora's 32-bit build
+
+pandora is a 32-bit machine, so `sizeof(long)` and `sizeof(void *)` are 4 there
+and 8 in the dev image. Almost nothing in the course depends on that, but if
+yours does, `-m32` makes the dev image produce 32-bit code too:
+
+```console
+$ g++ -m32 -std=c++14 -o calc main.cc parse.cc lex.cc
+$ make CXXFLAGS="-std=c++14 -Wall -m32"
+```
+
+What `-m32` changes is the *target*, not the compiler: the same g++ 6.3.0 emits
+x86 instead of x86-64, so pointers and `long` become 4 bytes and the binary
+matches pandora's data model. `./dev.sh verify` covers the same ground by
+running a genuinely 32-bit Debian 9, so reach for `-m32` only when you want the
+faster feedback of the dev image.
 
 ## Before you submit
 
@@ -221,7 +234,8 @@ builds several times faster and noticeably more reliable:
 - **Docker Desktop** → Settings → General → *Use Rosetta for x86_64/amd64
   emulation on Apple Silicon*.
 - **Colima** → start with `colima start --vm-type vz --vz-rosetta`, and give it
-  some room: `--cpu 4 --memory 8`.
+  some room: `--cpu 8 --memory 16`. To make that the default for every future
+  Colima instance, put it in `colima template`.
 
 Under plain QEMU emulation with little memory, `g++` occasionally dies with
 `internal compiler error: Segmentation fault`. That is the emulator, not your
@@ -260,9 +274,13 @@ reading; those two are not.
 ## Known differences from pandora
 
 The dev image runs 64-bit, pandora is 32-bit, so `sizeof(long)` and pointer
-widths differ. This almost never matters for coursework, and `./dev.sh verify`
-covers it when it does — that image is genuinely `i686-linux-gnu`.
+widths differ by default. Compile with `-m32` or run `./dev.sh verify` when
+that matters — see [Matching pandora's 32-bit build](#matching-pandoras-32-bit-build).
 
 The dev image also has a newer C library than pandora, so a function added to
 glibc after 2016 would compile there and fail on pandora. `./dev.sh verify`
 catches this too. Running it once before submitting is the whole mitigation.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Use it, fork it, share it with your year.
