@@ -7,8 +7,7 @@ Install Docker, then run one command. Everything else — the compiler,
 
 > **Docker needs the `buildx` component.** Docker Desktop ships it. If you
 > install the plain Docker CLI yourself, install `docker-buildx` too: IDEs build
-> dev containers with `docker buildx build`, and without it the build fails with
-> `unknown shorthand flag: 'f' in -f`.
+> dev containers with `docker buildx build`.
 
 ## macOS
 
@@ -96,6 +95,8 @@ faster.
    in a log panel). After that it's a few seconds.
 5. Done when the window title says `[Dev Container: elte-compilers]` and the
    integrated terminal (<kbd>Ctrl/Cmd+`</kbd>) is inside the container.
+
+![Demo showing the devcontainer work](demo.png)
 
 ### CLion (and other JetBrains IDEs)
 

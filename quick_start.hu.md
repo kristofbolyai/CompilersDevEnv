@@ -7,8 +7,7 @@ Telepítsd a Dockert, aztán futtass egy parancsot. Minden más — a fordító,
 
 > **A Dockerhez kell a `buildx` komponens.** A Docker Desktop tartalmazza. Ha a
 > sima Docker CLI-t telepíted, telepítsd a `docker-buildx` csomagot is: az
-> IDE-k a `docker buildx build` paranccsal építik a dev containereket, e nélkül
-> pedig `unknown shorthand flag: 'f' in -f` hibával elszáll.
+> IDE-k a `docker buildx build` paranccsal építik a dev containereket.
 
 ## macOS
 
@@ -97,6 +96,8 @@ is indul.
 5. Akkor kész, ha az ablak címsora ezt írja: `[Dev Container:
    elte-compilers]`, és a beépített terminál (<kbd>Ctrl/Cmd+`</kbd>) a
    konténeren belül fut.
+
+![Demo a devcontainer-ről](demo.png)
 
 ### CLion (és más JetBrains IDE-k)
 
