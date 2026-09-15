@@ -37,7 +37,10 @@
     "vscode": {
       "extensions": [
         "ms-vscode.cpptools",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack",
+        "daohong-emilio.yash"
       ],
       "settings": {
         "C_Cpp.default.cppStandard": "c++14",
