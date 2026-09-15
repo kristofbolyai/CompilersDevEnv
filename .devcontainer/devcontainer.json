@@ -65,7 +65,18 @@
   // and stops there; cmd.exe has no rm, so it falls through to rd; ver is a
   // no-op that keeps the exit status zero when there was nothing to delete,
   // which matters because a failing initializeCommand aborts the launch.
-  "initializeCommand": "rm -rf \"${localWorkspaceFolder}/workspace/.idea\" || rd /s /q \"${localWorkspaceFolder}\\workspace\\.idea\" 2>nul || ver >nul",
+  //
+  // No quotes and no ${localWorkspaceFolder} prefix here on purpose: this
+  // hook already runs with that folder as its cwd, so a path relative to it
+  // never contains a space and never needs quoting. That matters on Windows
+  // specifically - initializeCommand is spawned as `cmd.exe /c <string>`
+  // through node-pty, which escapes embedded quotes using the ordinary
+  // CommandLineToArgvW convention (\" for a literal quote). cmd.exe's own
+  // /c parser does not understand that convention - it just toggles
+  // quoted-mode on every literal " - so a quoted absolute path here comes
+  // out on the other side with a stray backslash grafted onto each end,
+  // silently corrupting the path `rd` is asked to delete.
+  "initializeCommand": "rm -rf workspace/.idea || rd /s /q workspace\\.idea 2>nul || ver >nul",
 
   "postCreateCommand": "g++ --version | head -1 && bisonc++ -v && flexc++ -v && flex --version"
 }
