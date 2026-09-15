@@ -30,6 +30,11 @@ verzióival. Rögzítve vannak, így meg is maradnak egyformának:
 | Debian | 9 (stretch) | 9-es eszközlánc Debian 12 alapon — lásd [Hogyan működik](#hogyan-működik) |
 | Architektúra | i686 (32 bites) | alapból x86-64, `-m32`-vel 32 bites, a `./dev.sh verify` i686 |
 
+A `flex` a fejlesztői image-ben (`./dev.sh`, VS Code, CLion) a `flexc++`-ra
+mutat, hogy ha egy másik tárgy beidegződése miatt valaki `flex`-et ír, az is
+működjön. A hiteles `./dev.sh verify` image-ben csak `flexc++` van, pontosan
+úgy, mint a pandorán.
+
 ## Mire van szükséged
 
 Dockerre, és semmi másra.

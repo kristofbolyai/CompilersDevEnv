@@ -107,15 +107,18 @@ RUN set -eux; \
 # ---------------------------------------------------------------------------
 # 3. Make the Debian 9 compiler the default `gcc` / `g++` / `cc` / `c++`.
 #    Students type `g++` and get exactly what pandora's `g++` would do.
+#    `flex` is aliased to `flexc++` too: pandora only has the C++ scanner
+#    generator, but muscle memory from other courses reaches for `flex`.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
-    for pair in gcc:gcc-6 g++:g++-6 cc:gcc-6 c++:g++-6 cpp:cpp-6; do \
+    for pair in gcc:gcc-6 g++:g++-6 cc:gcc-6 c++:g++-6 cpp:cpp-6 flex:flexc++; do \
         ln -sf "/usr/bin/${pair#*:}" "/usr/local/bin/${pair%%:*}"; \
     done; \
     gcc --version | head -1; \
     g++ --version | head -1; \
     bisonc++ -v; \
     flexc++ -v; \
+    flex -v; \
     printf 'int main(){ return 0; }\n' > /tmp/m.cc; \
     g++ -m32 -o /tmp/m32 /tmp/m.cc; /tmp/m32; \
     g++      -o /tmp/m64 /tmp/m.cc; /tmp/m64; \

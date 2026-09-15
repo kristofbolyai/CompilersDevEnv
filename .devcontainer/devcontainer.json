@@ -67,5 +67,5 @@
   // which matters because a failing initializeCommand aborts the launch.
   "initializeCommand": "rm -rf \"${localWorkspaceFolder}/workspace/.idea\" || rd /s /q \"${localWorkspaceFolder}\\workspace\\.idea\" 2>nul || ver >nul",
 
-  "postCreateCommand": "g++ --version | head -1 && bisonc++ -v && flexc++ -v"
+  "postCreateCommand": "g++ --version | head -1 && bisonc++ -v && flexc++ -v && flex -v"
 }

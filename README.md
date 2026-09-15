@@ -30,6 +30,10 @@ matched:
 | Debian | 9 (stretch) | 9 toolchain on a Debian 12 base — see [How it works](#how-it-works) |
 | Architecture | i686 (32-bit) | x86-64 by default, 32-bit via `-m32`, i686 in `./dev.sh verify` |
 
+`flex` is aliased to `flexc++` in the dev image (`./dev.sh`, VS Code, CLion), so
+if muscle memory from another course reaches for `flex` it still works. The
+untouched `./dev.sh verify` image only has `flexc++`, matching pandora exactly.
+
 ## What you need
 
 Docker, and nothing else.
