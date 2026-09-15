@@ -78,7 +78,24 @@ a few minutes; after that everything starts in about a second.
 ## Using it from an IDE
 
 The repository contains `.devcontainer/devcontainer.json`, so both IDEs pick it
-up with no configuration.
+up with no configuration. **Use VS Code if you don't already have a favorite**
+— it's what this environment is built and tested against, and it starts up
+faster.
+
+### VS Code (recommended)
+
+1. Install the **Dev Containers** extension (Extensions panel,
+   <kbd>Ctrl/Cmd+Shift+X</kbd>, search "Dev Containers").
+2. **File → Open Folder…** and pick the `CompilersDevEnv` folder.
+3. A popup appears bottom-right: *"Folder contains a Dev Container
+   configuration file. Reopen folder to develop in a container?"* — click
+   **Reopen in Container**.
+   - No popup? Press <kbd>F1</kbd> and run
+     **Dev Containers: Reopen in Container** yourself.
+4. First time only, this builds the image (a few minutes, with progress shown
+   in a log panel). After that it's a few seconds.
+5. Done when the window title says `[Dev Container: elte-compilers]` and the
+   integrated terminal (<kbd>Ctrl/Cmd+`</kbd>) is inside the container.
 
 ### CLion (and other JetBrains IDEs)
 
@@ -92,11 +109,6 @@ up with no configuration.
 CLion opens on `workspace/`, and `workspace/examples/calc/` has a
 `CMakeLists.txt`, so the example loads as a CMake project with working
 completion and debugging.
-
-### VS Code
-
-Install the **Dev Containers** extension, then run *Dev Containers: Reopen in
-Container* from the command palette (<kbd>F1</kbd>).
 
 ### No IDE
 

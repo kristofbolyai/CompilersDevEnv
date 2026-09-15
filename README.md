@@ -138,10 +138,46 @@ it the right place to set `d_val__`, the value bisonc++ pushes on its stack.
 
 ## Using an IDE
 
+**VS Code is the recommended option** — it is what this environment is built
+and tested against, it starts up faster than the JetBrains flow, and it does
+not need the extra `.idea` workaround described in
+[Troubleshooting](#troubleshooting). CLion works too, if you already know and
+prefer it.
+
+### VS Code (recommended)
+
+1. Install the free **[VS Code](https://code.visualstudio.com/)** editor if
+   you don't have it yet.
+2. Install the **[Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)**
+   extension (search for "Dev Containers" in the Extensions panel,
+   <kbd>Ctrl/Cmd+Shift+X</kbd>).
+3. Open the `CompilersDevEnv` folder in VS Code (**File → Open Folder…**).
+4. VS Code notices the `.devcontainer/devcontainer.json` file on its own and
+   shows a small popup in the bottom-right corner: *"Folder contains a Dev
+   Container configuration file. Reopen folder to develop in a container?"*
+   Click **Reopen in Container**.
+   - Missed the popup, or it never appeared? Open the Command Palette
+     (<kbd>F1</kbd>, or <kbd>Ctrl/Cmd+Shift+P</kbd>) and run
+     **Dev Containers: Reopen in Container**.
+5. The first time, VS Code builds the image and installs the C++ extensions
+   listed in `devcontainer.json` automatically — this takes a few minutes and
+   you'll see progress in a "Dev Containers" log panel. Every time after that
+   it reopens in a few seconds.
+6. Once it's done, the VS Code window title shows `[Dev Container: elte-
+   compilers]`, the Explorer on the left shows the `workspace/` folder, and
+   the integrated terminal (<kbd>Ctrl/Cmd+`</kbd>) already runs *inside* the
+   container — `g++ --version` there should print the pandora-matching
+   version from [Versions](#versions).
+
+From here, open `workspace/examples/calc/` and you get real completion,
+go-to-definition and a working debugger (set a breakpoint and press
+<kbd>F5</kbd>) via the `ms-vscode.cpptools` extension.
+
 ### CLion and other JetBrains IDEs
 
-This repository ships a `.devcontainer/devcontainer.json`, so CLion can run
-your code inside the container with full completion, navigation and debugging.
+CLion can use the same `.devcontainer/devcontainer.json`, but the workflow has
+one more step and one known rough edge (see
+[Troubleshooting](#troubleshooting) if it hangs on reopen):
 
 1. Open the project folder in CLion.
 2. Open `.devcontainer/devcontainer.json`.
@@ -151,11 +187,6 @@ your code inside the container with full completion, navigation and debugging.
 
 CLion opens directly on `workspace/`, and `workspace/examples/calc/` has a
 `CMakeLists.txt` so the example is a CMake project it understands natively.
-
-### VS Code
-
-Install the **Dev Containers** extension, then *Reopen in Container* from the
-command palette. The same `devcontainer.json` is used.
 
 ### Any other editor
 

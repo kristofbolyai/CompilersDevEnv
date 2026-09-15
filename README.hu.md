@@ -139,11 +139,47 @@ keresztül, ezért ez a megfelelő hely a `d_val__` beállítására, azaz annak
 
 ## IDE használata
 
+**A VS Code-ot javasoljuk** — erre a szerkesztőre lett kifejlesztve és tesztelve
+ez a környezet, gyorsabban indul, mint a JetBrains-es változat, és nem kell
+hozzá a [Hibaelhárítás](#hibaelhárítás) részben leírt `.idea`-workaround sem. A
+CLion is működik, ha már ismered és azt szereted.
+
+### VS Code (javasolt)
+
+1. Telepítsd az ingyenes **[VS Code](https://code.visualstudio.com/)**
+   szerkesztőt, ha még nincs meg.
+2. Telepítsd a **[Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)**
+   bővítményt (keresd meg "Dev Containers" néven az Extensions panelen,
+   <kbd>Ctrl/Cmd+Shift+X</kbd>).
+3. Nyisd meg a `CompilersDevEnv` mappát a VS Code-ban (**File → Open
+   Folder…**).
+4. A VS Code magától észreveszi a `.devcontainer/devcontainer.json` fájlt, és
+   megjelenít egy kis felugró ablakot jobbra lent: *"Folder contains a Dev
+   Container configuration file. Reopen folder to develop in a container?"*
+   Kattints a **Reopen in Container** gombra.
+   - Ha lemaradtál a felugró ablakról, vagy meg sem jelent: nyisd meg a
+     parancspalettát (<kbd>F1</kbd>, vagy <kbd>Ctrl/Cmd+Shift+P</kbd>), és
+     futtasd a **Dev Containers: Reopen in Container** parancsot.
+5. Első alkalommal a VS Code felépíti az image-et, és automatikusan telepíti a
+   `devcontainer.json`-ban felsorolt C++ bővítményeket — ez néhány percig
+   tart, a folyamatot egy "Dev Containers" naplópanel mutatja. Utána néhány
+   másodperc alatt megnyílik.
+6. Ha kész, az ablak címsorában ez áll: `[Dev Container: elte-compilers]`, bal
+   oldalt az Explorerben a `workspace/` mappa látszik, és a beépített
+   terminál (<kbd>Ctrl/Cmd+`</kbd>) már a konténeren belül fut — a `g++
+   --version` ott a pandorával megegyező verziót írja ki, lásd
+   [Verziók](#verziók).
+
+Innentől a `workspace/examples/calc/` mappát megnyitva valódi
+kódkiegészítést, definícióra ugrást és működő debuggert kapsz az
+`ms-vscode.cpptools` bővítménytől (törj be egy breakpointot, majd nyomj
+<kbd>F5</kbd>-öt).
+
 ### CLion és más JetBrains IDE-k
 
-A repó tartalmaz egy `.devcontainer/devcontainer.json` fájlt, így a CLion a
-konténerben tudja futtatni a kódodat, teljes kódkiegészítéssel, navigációval
-és debuggolással.
+A CLion is tudja használni ugyanazt a `.devcontainer/devcontainer.json` fájlt,
+de a folyamat eggyel több lépésből áll, és van egy ismert buktatója is (lásd a
+[Hibaelhárítás](#hibaelhárítás) részt, ha lefagy újranyitáskor):
 
 1. Nyisd meg a projekt mappáját a CLionban.
 2. Nyisd meg a `.devcontainer/devcontainer.json` fájlt.
@@ -154,11 +190,6 @@ konténerben tudja futtatni a kódodat, teljes kódkiegészítéssel, navigáci�
 A CLion egyből a `workspace/` mappát nyitja meg, és a
 `workspace/examples/calc/` mappában van `CMakeLists.txt`, így a példát CMake
 projektként natívan kezeli.
-
-### VS Code
-
-Telepítsd a **Dev Containers** bővítményt, majd a parancspalettából válaszd a
-*Reopen in Container* lehetőséget. Ugyanez a `devcontainer.json` fut le.
 
 ### Bármilyen más szerkesztő
 

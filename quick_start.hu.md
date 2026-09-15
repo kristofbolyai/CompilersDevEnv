@@ -78,7 +78,25 @@ ez pár percig tart; utána minden indítás nagyjából egy másodperc.
 ## Használat IDE-ből
 
 A repó tartalmaz `.devcontainer/devcontainer.json` fájlt, így mindkét IDE
-beállítás nélkül felismeri.
+beállítás nélkül felismeri. **Ha nincs kialakult kedvenced, használd a VS
+Code-ot** — erre lett kifejlesztve és tesztelve ez a környezet, és gyorsabban
+is indul.
+
+### VS Code (javasolt)
+
+1. Telepítsd a **Dev Containers** bővítményt (Extensions panel,
+   <kbd>Ctrl/Cmd+Shift+X</kbd>, keresd meg: "Dev Containers").
+2. **File → Open Folder…**, és válaszd ki a `CompilersDevEnv` mappát.
+3. Jobbra lent megjelenik egy felugró ablak: *"Folder contains a Dev
+   Container configuration file. Reopen folder to develop in a container?"*
+   — kattints a **Reopen in Container** gombra.
+   - Nem jött fel a felugró ablak? Nyomj <kbd>F1</kbd>-et, és futtasd magad a
+     **Dev Containers: Reopen in Container** parancsot.
+4. Csak első alkalommal épül fel az image (néhány perc, a folyamat egy
+   naplópanelen látszik). Utána már csak néhány másodperc.
+5. Akkor kész, ha az ablak címsora ezt írja: `[Dev Container:
+   elte-compilers]`, és a beépített terminál (<kbd>Ctrl/Cmd+`</kbd>) a
+   konténeren belül fut.
 
 ### CLion (és más JetBrains IDE-k)
 
@@ -92,11 +110,6 @@ beállítás nélkül felismeri.
 A CLion a `workspace/` mappát nyitja meg, és a `workspace/examples/calc/`
 mappában van `CMakeLists.txt`, így a példa CMake projektként töltődik be,
 működő kódkiegészítéssel és debuggolással.
-
-### VS Code
-
-Telepítsd a **Dev Containers** bővítményt, majd a parancspalettából
-(<kbd>F1</kbd>) futtasd a *Dev Containers: Reopen in Container* parancsot.
 
 ### IDE nélkül
 
