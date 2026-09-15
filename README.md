@@ -56,91 +56,6 @@ Check your setup at any time:
 $ ./dev.sh doctor
 ```
 
-## Everyday use
-
-Use `./dev.sh` on macOS and Linux, `.\dev.ps1` on Windows PowerShell. They take
-the same commands and do the same things.
-
-| Command | What it does |
-|---|---|
-| `./dev.sh` | Opens a shell inside the container, in your `workspace/` folder |
-| `./dev.sh test` | Builds and tests the bundled example — a good first thing to run |
-| `./dev.sh new hazi1` | Creates `workspace/hazi1/` from the example skeleton |
-| `./dev.sh run make` | Runs one command in the container and exits |
-| `./dev.sh verify` | Rebuilds on a real 32-bit Debian 9 — run this before submitting |
-| `./dev.sh build` | Rebuilds the image (only needed if you change the Dockerfile) |
-| `./dev.sh doctor` | Checks Docker, emulation and the toolchain |
-| `./dev.sh clean` | Deletes the images this project created |
-
-The first `./dev.sh` builds the image and takes a few minutes. Every run after
-that starts in about a second.
-
-A useful detail: `./dev.sh` remembers where you are. Run it from
-`workspace/hazi1/` and you land in `/workspace/hazi1` inside the container.
-
-## Where your code goes
-
-The repository's `workspace/` folder is mounted into the container at
-`/workspace`. It is the *same* folder, not a copy — edit files in your normal
-editor on your own machine, compile them in the container, and both sides see
-every change immediately.
-
-```
-CompilersDevEnv/
-├── dev.sh, dev.ps1          ← the scripts you run
-├── workspace/               ← mounted at /workspace; your code lives here
-│   ├── examples/calc/       ← a working scanner + parser, start here
-│   └── hazi1/               ← whatever you create
-├── docker/                  ← image definitions
-└── .devcontainer/           ← IDE integration
-```
-
-Nothing outside `workspace/` needs to be touched during the semester.
-
-## Writing a scanner and a parser
-
-Open `workspace/examples/calc/` — it is a complete four-function calculator,
-about a hundred lines in total, and it is the shortest explanation of how these
-tools fit together.
-
-Two files describe the language, and you write both:
-
-- **`lexer`** — the flexc++ specification: which character patterns form which
-  tokens.
-- **`grammar`** — the bisonc++ specification: how tokens combine into
-  expressions, and what to do when they do.
-
-Running the generators turns those into C++:
-
-```console
-$ bisonc++ grammar     # writes parserbase.h and parse.cc
-$ flexc++ lexer        # writes scannerbase.h and lex.cc
-```
-
-**The order matters.** `bisonc++` defines the token constants
-(`ParserBase::NUMBER` and friends) in `parserbase.h`, and the scanner's actions
-use them, so the parser has to be generated first. The `Makefile` already
-encodes this, so plain `make` always does the right thing.
-
-Both generators also create four files *once* and then never touch them again:
-`parser.h`, `parser.ih`, `scanner.h`, `scanner.ih`. Those are yours — they are
-where you add members and helper functions, and they are the files kept in
-version control. The four regenerated ones are in `.gitignore`, because
-rebuilding overwrites them every time.
-
-| File | Written by | Edit it? |
-|---|---|---|
-| `lexer`, `grammar` | you | yes — this is the actual work |
-| `parserbase.h`, `parse.cc` | bisonc++, every run | no |
-| `scannerbase.h`, `lex.cc` | flexc++, every run | no |
-| `parser.h`, `parser.ih` | bisonc++, once | yes |
-| `scanner.h`, `scanner.ih` | flexc++, once | yes |
-
-The example shows the one piece that is genuinely fiddly: getting a token's
-*value* (not just its type) from the scanner to the parser. Look at
-`Parser::lex()` in `parser.ih` — every token passes through there, which makes
-it the right place to set `d_val__`, the value bisonc++ pushes on its stack.
-
 ## Using an IDE
 
 **VS Code is the recommended option** — it is what this environment is built
@@ -198,6 +113,47 @@ CLion opens directly on `workspace/`, and `workspace/examples/calc/` has a
 There is nothing to integrate: edit files on your machine, and keep a
 `./dev.sh` shell open in a terminal to run `make`. This works everywhere and is
 what most people end up doing.
+
+## Where your code goes
+
+The repository's `workspace/` folder is mounted into the container at
+`/workspace`. It is the *same* folder, not a copy — edit files in your normal
+editor on your own machine, compile them in the container, and both sides see
+every change immediately.
+
+```
+CompilersDevEnv/
+├── dev.sh, dev.ps1          ← the scripts you run
+├── workspace/               ← mounted at /workspace; your code lives here
+│   ├── examples/calc/       ← a working scanner + parser, start here
+│   └── hazi1/               ← whatever you create
+├── docker/                  ← image definitions
+└── .devcontainer/           ← IDE integration
+```
+
+Nothing outside `workspace/` needs to be touched during the semester.
+
+## Everyday use
+
+Use `./dev.sh` on macOS and Linux, `.\dev.ps1` on Windows PowerShell. They take
+the same commands and do the same things.
+
+| Command | What it does |
+|---|---|
+| `./dev.sh` | Opens a shell inside the container, in your `workspace/` folder |
+| `./dev.sh test` | Builds and tests the bundled example — a good first thing to run |
+| `./dev.sh new hazi1` | Creates `workspace/hazi1/` from the example skeleton |
+| `./dev.sh run make` | Runs one command in the container and exits |
+| `./dev.sh verify` | Rebuilds on a real 32-bit Debian 9 — run this before submitting |
+| `./dev.sh build` | Rebuilds the image (only needed if you change the Dockerfile) |
+| `./dev.sh doctor` | Checks Docker, emulation and the toolchain |
+| `./dev.sh clean` | Deletes the images this project created |
+
+The first `./dev.sh` builds the image and takes a few minutes. Every run after
+that starts in about a second.
+
+A useful detail: `./dev.sh` remembers where you are. Run it from
+`workspace/hazi1/` and you land in `/workspace/hazi1` inside the container.
 
 ## Matching pandora's 32-bit build
 

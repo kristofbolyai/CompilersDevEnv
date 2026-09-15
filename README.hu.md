@@ -57,92 +57,6 @@ A beállításaidat bármikor ellenőrizheted:
 $ ./dev.sh doctor
 ```
 
-## Mindennapi használat
-
-macOS-en és Linuxon a `./dev.sh`, Windows PowerShellben a `.\dev.ps1`
-parancsot használd. Ugyanazokat a parancsokat ismerik, és ugyanazt csinálják.
-
-| Parancs | Mit csinál |
-|---|---|
-| `./dev.sh` | Shellt nyit a konténerben, a `workspace/` mappádban |
-| `./dev.sh test` | Lefordítja és teszteli a mellékelt példát — érdemes ezzel kezdeni |
-| `./dev.sh new hazi1` | Létrehozza a `workspace/hazi1/` mappát a példa vázából |
-| `./dev.sh run make` | Lefuttat egy parancsot a konténerben, majd kilép |
-| `./dev.sh verify` | Újrafordít igazi 32 bites Debian 9-en — beadás előtt ezt futtasd |
-| `./dev.sh build` | Újraépíti az image-et (csak akkor kell, ha a Dockerfile-t módosítod) |
-| `./dev.sh doctor` | Ellenőrzi a Dockert, az emulációt és az eszközláncot |
-| `./dev.sh clean` | Törli a projekt által létrehozott image-eket |
-
-Az első `./dev.sh` felépíti az image-et, ez pár percig tart. Utána minden
-indítás nagyjából egy másodperc.
-
-Hasznos részlet: a `./dev.sh` tudja, hol vagy. Ha a `workspace/hazi1/`
-mappából indítod, a konténerben a `/workspace/hazi1` mappában landolsz.
-
-## Hová kerül a kódod
-
-A repó `workspace/` mappája a konténerben a `/workspace` útvonalon érhető el.
-Ez *ugyanaz* a mappa, nem másolat — a fájlokat a saját gépeden szerkeszted a
-megszokott szerkesztőddel, a konténerben fordítod, és mindkét oldal azonnal
-látja a változásokat.
-
-```
-CompilersDevEnv/
-├── dev.sh, dev.ps1          ← ezeket futtatod
-├── workspace/               ← /workspace néven becsatolva; ide kerül a kódod
-│   ├── examples/calc/       ← működő scanner + parser, ezzel kezdd
-│   └── hazi1/               ← amit te hozol létre
-├── docker/                  ← az image-ek leírása
-└── .devcontainer/           ← IDE-integráció
-```
-
-A `workspace/` mappán kívül a félév során semmihez nem kell hozzányúlnod.
-
-## Scanner és parser írása
-
-Nyisd meg a `workspace/examples/calc/` mappát — ez egy teljes, négy
-alapműveletet ismerő kalkulátor, összesen száz sor körül, és ez a legrövidebb
-magyarázat arra, hogyan illeszkednek ezek az eszközök egymáshoz.
-
-Két fájl írja le a nyelvet, és mindkettőt te írod:
-
-- **`lexer`** — a flexc++ specifikáció: milyen karaktermintákból milyen
-  tokenek lesznek.
-- **`grammar`** — a bisonc++ specifikáció: hogyan állnak össze a tokenek
-  kifejezésekké, és mi történjen közben.
-
-A generátorok ezekből C++ kódot csinálnak:
-
-```console
-$ bisonc++ grammar     # létrehozza a parserbase.h és parse.cc fájlokat
-$ flexc++ lexer        # létrehozza a scannerbase.h és lex.cc fájlokat
-```
-
-**A sorrend számít.** A `bisonc++` definiálja a token-konstansokat
-(`ParserBase::NUMBER` és társai) a `parserbase.h` fájlban, a scanner
-akciói pedig ezeket használják, tehát a parsert kell előbb generálni. A
-`Makefile` ezt már tartalmazza, így a sima `make` mindig jól csinálja.
-
-Mindkét generátor létrehoz továbbá négy fájlt *egyszer*, és utána soha nem
-nyúl hozzájuk: `parser.h`, `parser.ih`, `scanner.h`, `scanner.ih`. Ezek a
-tieid — ide kerülnek a saját tagváltozóid és segédfüggvényeid, és ezeket
-tartja nyilván a verziókezelő. A négy újragenerált fájl a `.gitignore`-ban
-van, mert minden fordításkor felülíródik.
-
-| Fájl | Ki írja | Szerkeszthető? |
-|---|---|---|
-| `lexer`, `grammar` | te | igen — tulajdonképpen ez a feladat |
-| `parserbase.h`, `parse.cc` | bisonc++, minden futáskor | nem |
-| `scannerbase.h`, `lex.cc` | flexc++, minden futáskor | nem |
-| `parser.h`, `parser.ih` | bisonc++, egyszer | igen |
-| `scanner.h`, `scanner.ih` | flexc++, egyszer | igen |
-
-A példa megmutatja azt az egy részletet, ami tényleg trükkös: hogyan jut el egy
-token *értéke* (nem csak a típusa) a scannertől a parserig. Nézd meg a
-`Parser::lex()` függvényt a `parser.ih` fájlban — minden token ezen megy
-keresztül, ezért ez a megfelelő hely a `d_val__` beállítására, azaz annak az
-értéknek, amit a bisonc++ a veremre tesz.
-
 ## IDE használata
 
 **A VS Code-ot javasoljuk** — erre a szerkesztőre lett kifejlesztve és tesztelve
@@ -202,6 +116,47 @@ projektként natívan kezeli.
 Nincs mit integrálni: a fájlokat a saját gépeden szerkeszted, és nyitva tartasz
 egy `./dev.sh` shellt egy terminálban a `make` futtatásához. Ez mindenhol
 működik, és a legtöbben úgyis ennél kötnek ki.
+
+## Hová kerül a kódod
+
+A repó `workspace/` mappája a konténerben a `/workspace` útvonalon érhető el.
+Ez *ugyanaz* a mappa, nem másolat — a fájlokat a saját gépeden szerkeszted a
+megszokott szerkesztőddel, a konténerben fordítod, és mindkét oldal azonnal
+látja a változásokat.
+
+```
+CompilersDevEnv/
+├── dev.sh, dev.ps1          ← ezeket futtatod
+├── workspace/               ← /workspace néven becsatolva; ide kerül a kódod
+│   ├── examples/calc/       ← működő scanner + parser, ezzel kezdd
+│   └── hazi1/               ← amit te hozol létre
+├── docker/                  ← az image-ek leírása
+└── .devcontainer/           ← IDE-integráció
+```
+
+A `workspace/` mappán kívül a félév során semmihez nem kell hozzányúlnod.
+
+## Mindennapi használat
+
+macOS-en és Linuxon a `./dev.sh`, Windows PowerShellben a `.\dev.ps1`
+parancsot használd. Ugyanazokat a parancsokat ismerik, és ugyanazt csinálják.
+
+| Parancs | Mit csinál |
+|---|---|
+| `./dev.sh` | Shellt nyit a konténerben, a `workspace/` mappádban |
+| `./dev.sh test` | Lefordítja és teszteli a mellékelt példát — érdemes ezzel kezdeni |
+| `./dev.sh new hazi1` | Létrehozza a `workspace/hazi1/` mappát a példa vázából |
+| `./dev.sh run make` | Lefuttat egy parancsot a konténerben, majd kilép |
+| `./dev.sh verify` | Újrafordít igazi 32 bites Debian 9-en — beadás előtt ezt futtasd |
+| `./dev.sh build` | Újraépíti az image-et (csak akkor kell, ha a Dockerfile-t módosítod) |
+| `./dev.sh doctor` | Ellenőrzi a Dockert, az emulációt és az eszközláncot |
+| `./dev.sh clean` | Törli a projekt által létrehozott image-eket |
+
+Az első `./dev.sh` felépíti az image-et, ez pár percig tart. Utána minden
+indítás nagyjából egy másodperc.
+
+Hasznos részlet: a `./dev.sh` tudja, hol vagy. Ha a `workspace/hazi1/`
+mappából indítod, a konténerben a `/workspace/hazi1` mappában landolsz.
 
 ## A pandora 32 bites fordításának megfelelően
 
