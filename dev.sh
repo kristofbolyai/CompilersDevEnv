@@ -38,7 +38,6 @@ require_docker() {
 
 image_exists() { docker image inspect "$1" >/dev/null 2>&1; }
 
-# Build arguments shared by both images.
 build_image() {
     local image="$1" dockerfile="$2" platform="${3:-$PLATFORM}"
     info "building $image (first time takes a few minutes)"

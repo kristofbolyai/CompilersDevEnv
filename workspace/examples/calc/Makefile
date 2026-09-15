@@ -21,13 +21,11 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# bisonc++ writes parse.cc and parserbase.h from the grammar.
 parse.cc parserbase.h: grammar
 	bisonc++ grammar
 
-# flexc++ writes lex.cc and scannerbase.h from the lexer specification.
-# It needs parserbase.h to already exist, because the scanner's actions refer
-# to the token constants bisonc++ defines there.
+# flexc++ needs parserbase.h to already exist: the scanner's actions refer to
+# the token constants bisonc++ defines there.
 lex.cc scannerbase.h: lexer parserbase.h
 	flexc++ lexer
 
