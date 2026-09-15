@@ -26,13 +26,14 @@ matched:
 |---|---|---|
 | `gcc` / `g++` | 6.3.0 (Debian 6.3.0-18+deb9u1) | identical |
 | `bisonc++` | V5.02.00 | identical |
+| `flex` / `flex++` | 2.6.1 | identical |
 | `flexc++` | V2.05.00 | identical |
 | Debian | 9 (stretch) | 9 toolchain on a Debian 12 base — see [How it works](#how-it-works) |
 | Architecture | i686 (32-bit) | x86-64 by default, 32-bit via `-m32`, i686 in `./dev.sh verify` |
 
-`flex` is aliased to `flexc++` in the dev image (`./dev.sh`, VS Code, CLion), so
-if muscle memory from another course reaches for `flex` it still works. The
-untouched `./dev.sh verify` image only has `flexc++`, matching pandora exactly.
+pandora carries both scanner generators side by side: GNU `flex`/`flex++` and
+the C++-native `flexc++`. This environment installs both, so `flex` isn't an
+alias for anything here — it's the same Debian 9 `flex` package pandora runs.
 
 ## What you need
 

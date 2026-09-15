@@ -34,7 +34,7 @@ RUN set -eux; \
     echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid; \
     apt-get update -qq; \
     apt-get install -y -qq --no-install-recommends \
-        g++ gcc make cmake gdb valgrind bisonc++ flexc++ \
+        g++ gcc make cmake gdb valgrind bisonc++ flexc++ flex \
         git less nano gosu \
     ; \
     rm -rf /var/lib/apt/lists/*
@@ -54,7 +54,7 @@ RUN set -eux; \
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-RUN set -eux; uname -m; gcc -v 2>&1 | grep -E "^Target|^gcc version"; bisonc++ -v; flexc++ -v
+RUN set -eux; uname -m; gcc -v 2>&1 | grep -E "^Target|^gcc version"; bisonc++ -v; flexc++ -v; flex --version
 
 WORKDIR /workspaces/elte-compilers/workspace
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

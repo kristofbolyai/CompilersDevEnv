@@ -11,7 +11,8 @@
 # Goal: reproduce the toolchain of the faculty server `pandora` exactly,
 # while still being usable by modern IDEs.
 #
-#   pandora:  Debian 9 (stretch), gcc 6.3.0-18+deb9u1, bisonc++ 5.02.00
+#   pandora:  Debian 9 (stretch), gcc 6.3.0-18+deb9u1, bisonc++ 5.02.00,
+#             flex 2.6.1 (flex/flex++) and flexc++ 2.05.00 side by side
 #
 # Debian 9 itself cannot host a JetBrains/VS Code remote backend: those need
 # glibc >= 2.28 and stretch ships 2.24. So instead of running *on* stretch we
@@ -25,12 +26,13 @@
 FROM --platform=linux/amd64 debian:bookworm-slim
 
 LABEL org.opencontainers.image.title="ELTE Compilers Dev Environment"
-LABEL org.opencontainers.image.description="gcc 6.3.0 + bisonc++ 5.02.00 + flexc++ 2.05.00, as on pandora"
+LABEL org.opencontainers.image.description="gcc 6.3.0 + bisonc++ 5.02.00 + flex 2.6.1 + flexc++ 2.05.00, as on pandora"
 
 # Exact versions as found on pandora. archive.debian.org is frozen, so these
 # resolve identically forever.
 ARG GCC6_VER=6.3.0-18+deb9u1
 ARG BISONCPP_VER=5.02.00-1
+ARG FLEX_VER=2.6.1-1.3
 ARG FLEXCPP_VER=2.05.00-1+b1
 ARG BOBCAT_VER=4.04.00-1
 ARG ISL_VER=0.18-1
@@ -45,6 +47,8 @@ ENV LANG=C.UTF-8
 #    JetBrains / VS Code remote backends require inside a dev container.
 #    The lib32/i386 packages are what make `g++ -m32` work: pandora is a 32-bit
 #    machine, so compiling with -m32 here reproduces its type sizes.
+#    m4 is flex's own runtime dependency (it shells out to m4 to expand its
+#    skeleton scanner), pulled from bookworm since m4 behavior is stable.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
     dpkg --add-architecture i386; \
@@ -52,7 +56,7 @@ RUN set -eux; \
     apt-get install -y -qq --no-install-recommends \
         binutils libc6-dev libgmp10 libmpc3 zlib1g libcc1-0 \
         libc6-dev-i386 libc6-i386 lib32stdc++6 lib32gcc-s1 linux-libc-dev:i386 \
-        make cmake gdb valgrind \
+        make cmake gdb valgrind m4 \
         git curl ca-certificates unzip procps less nano vim-tiny sudo gosu \
         libx11-6 libxext6 libxrender1 libxtst6 libxi6 libfreetype6 \
     ; \
@@ -92,7 +96,7 @@ RUN set -eux; \
         "libisl15=${ISL_VER}" "libmpfr4=${MPFR_VER}" \
         "libbobcat4=${BOBCAT_VER}" "libssl1.1=${SSL_VER}" \
         libreadline7/stretch libtinfo5/stretch libmilter1.0.1/stretch \
-        "bisonc++=${BISONCPP_VER}" "flexc++=${FLEXCPP_VER}"; \
+        "bisonc++=${BISONCPP_VER}" "flex=${FLEX_VER}" "flexc++=${FLEXCPP_VER}"; \
     for deb in *.deb; do dpkg-deb -x "$deb" /tmp/stage; done; \
     cd /tmp/stage; \
     for d in bin sbin lib lib64; do \
@@ -107,18 +111,18 @@ RUN set -eux; \
 # ---------------------------------------------------------------------------
 # 3. Make the Debian 9 compiler the default `gcc` / `g++` / `cc` / `c++`.
 #    Students type `g++` and get exactly what pandora's `g++` would do.
-#    `flex` is aliased to `flexc++` too: pandora only has the C++ scanner
-#    generator, but muscle memory from other courses reaches for `flex`.
+#    `flex` and `flex++` come straight from the unpacked Debian 9 package
+#    above, so no alias is needed for them the way there is for gcc/g++.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
-    for pair in gcc:gcc-6 g++:g++-6 cc:gcc-6 c++:g++-6 cpp:cpp-6 flex:flexc++; do \
+    for pair in gcc:gcc-6 g++:g++-6 cc:gcc-6 c++:g++-6 cpp:cpp-6; do \
         ln -sf "/usr/bin/${pair#*:}" "/usr/local/bin/${pair%%:*}"; \
     done; \
     gcc --version | head -1; \
     g++ --version | head -1; \
     bisonc++ -v; \
     flexc++ -v; \
-    flex -v; \
+    flex --version; \
     printf 'int main(){ return 0; }\n' > /tmp/m.cc; \
     g++ -m32 -o /tmp/m32 /tmp/m.cc; /tmp/m32; \
     g++      -o /tmp/m64 /tmp/m.cc; /tmp/m64; \

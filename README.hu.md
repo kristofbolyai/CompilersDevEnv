@@ -26,14 +26,15 @@ verzióival. Rögzítve vannak, így meg is maradnak egyformának:
 |---|---|---|
 | `gcc` / `g++` | 6.3.0 (Debian 6.3.0-18+deb9u1) | ugyanaz |
 | `bisonc++` | V5.02.00 | ugyanaz |
+| `flex` / `flex++` | 2.6.1 | ugyanaz |
 | `flexc++` | V2.05.00 | ugyanaz |
 | Debian | 9 (stretch) | 9-es eszközlánc Debian 12 alapon — lásd [Hogyan működik](#hogyan-működik) |
 | Architektúra | i686 (32 bites) | alapból x86-64, `-m32`-vel 32 bites, a `./dev.sh verify` i686 |
 
-A `flex` a fejlesztői image-ben (`./dev.sh`, VS Code, CLion) a `flexc++`-ra
-mutat, hogy ha egy másik tárgy beidegződése miatt valaki `flex`-et ír, az is
-működjön. A hiteles `./dev.sh verify` image-ben csak `flexc++` van, pontosan
-úgy, mint a pandorán.
+A pandorán a két scannergenerátor egymás mellett van jelen: a GNU
+`flex`/`flex++` és a C++-natív `flexc++`. Ez a környezet mindkettőt telepíti,
+így a `flex` itt nem alias semmire — ugyanaz a Debian 9-es `flex` csomag fut,
+mint a pandorán.
 
 ## Mire van szükséged
 
