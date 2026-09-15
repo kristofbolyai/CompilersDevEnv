@@ -269,6 +269,12 @@ File sharing.
 the container, so this should not happen. If you ran `docker run` by hand, add
 `-e HOST_UID=$(id -u) -e HOST_GID=$(id -g)`.
 
+**CLion crashes or hangs when you reopen the dev container** — the backend
+leaves a `workspace/.idea` behind, which the IDE then sees as a project inside
+your project. The `initializeCommand` in `.devcontainer/devcontainer.json`
+deletes it on the host before each start, so this should not happen. If you hit
+it once, delete `workspace/.idea` yourself and open the project again.
+
 **`make` says a target is up to date after you edited `grammar`** — if the
 clocks of host and container disagree, `make clean && make` sorts it out.
 

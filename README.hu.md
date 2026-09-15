@@ -275,6 +275,13 @@ felhasználói azonosítódat a konténernek, így ennek nem szabadna előfordul
 Ha kézzel futtattál `docker run`-t, tedd hozzá: `-e HOST_UID=$(id -u)
 -e HOST_GID=$(id -g)`.
 
+**A CLion összeomlik vagy lefagy a dev container újranyitásakor** — a backend
+hagy maga után egy `workspace/.idea` mappát, amit az IDE külön projektként lát a
+projekteden belül. A `.devcontainer/devcontainer.json` `initializeCommand`
+beállítása minden indítás előtt letörli ezt a gazdagépen, így ennek nem szabadna
+előfordulnia. Ha mégis megtörtént, töröld kézzel a `workspace/.idea` mappát, és
+nyisd meg újra a projektet.
+
 **A `make` azt mondja, minden naprakész, pedig szerkesztetted a `grammar`
 fájlt** — ha a gazdagép és a konténer órája eltér, a `make clean && make`
 megoldja.

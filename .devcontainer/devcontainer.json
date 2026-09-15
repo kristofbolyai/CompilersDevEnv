@@ -46,5 +46,23 @@
     }
   },
 
+  // CLion's backend writes its project configuration into .idea inside
+  // workspaceFolder, and the bind mount puts it on the host. That leaves a
+  // second project root nested inside the repository's own, which crashes the
+  // IDE when the workspace is reopened.
+  //
+  // initializeCommand is the only lifecycle hook that runs on the host machine
+  // rather than in the container, and it runs during initialization - on
+  // container creation and on every subsequent start - so it is the one place
+  // that can clear the directory before a window opens. The spec has no
+  // host-side hook for closing, but clearing it on the way in covers the same
+  // ground: a stale .idea only does harm when the next window opens.
+  //
+  // The chain below is what portability costs. /bin/sh takes the first form
+  // and stops there; cmd.exe has no rm, so it falls through to rd; ver is a
+  // no-op that keeps the exit status zero when there was nothing to delete,
+  // which matters because a failing initializeCommand aborts the launch.
+  "initializeCommand": "rm -rf \"${localWorkspaceFolder}/workspace/.idea\" || rd /s /q \"${localWorkspaceFolder}\\workspace\\.idea\" 2>nul || ver >nul",
+
   "postCreateCommand": "g++ --version | head -1 && bisonc++ -v && flexc++ -v"
 }
