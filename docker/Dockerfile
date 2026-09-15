@@ -79,6 +79,8 @@ RUN set -eux; \
 #    libreadline7/libtinfo5/libmilter1.0.1 are pulled in because libbobcat4 -
 #    the library bisonc++ and flexc++ are linked against - needs them; the
 #    archive is frozen, so leaving them unpinned is still deterministic.
+#    libfl-dev is flex's own header/static-lib package: FlexLexer.h (needed
+#    to compile a `%option c++` scanner) lives there, not in flex itself.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
     echo 'deb [arch=amd64 trusted=yes] http://archive.debian.org/debian stretch main'  >  /etc/apt/sources.list.d/legacy.list; \
@@ -96,7 +98,7 @@ RUN set -eux; \
         "libisl15=${ISL_VER}" "libmpfr4=${MPFR_VER}" \
         "libbobcat4=${BOBCAT_VER}" "libssl1.1=${SSL_VER}" \
         libreadline7/stretch libtinfo5/stretch libmilter1.0.1/stretch \
-        "bisonc++=${BISONCPP_VER}" "flex=${FLEX_VER}" "flexc++=${FLEXCPP_VER}"; \
+        "bisonc++=${BISONCPP_VER}" "flex=${FLEX_VER}" "libfl-dev=${FLEX_VER}" "flexc++=${FLEXCPP_VER}"; \
     for deb in *.deb; do dpkg-deb -x "$deb" /tmp/stage; done; \
     cd /tmp/stage; \
     for d in bin sbin lib lib64; do \
