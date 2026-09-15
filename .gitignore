@@ -25,3 +25,15 @@ workspace/examples/calc/calc
 core
 core.*
 .DS_Store
+
+# --- Student workspace ---------------------------------------------------------
+# workspace/ is scratch space: assignment folders students create here (hazi1/,
+# hazi2/, ...) shouldn't show up as untracked clutter in `git status`. The
+# bundled example and its README ship with the repo and stay tracked, so they
+# are carved back out. Each directory level needs its own "!" rule - git won't
+# look inside a directory it has already decided to ignore.
+/workspace/*
+!/workspace/README.md
+!/workspace/examples/
+/workspace/examples/*
+!/workspace/examples/calc/
